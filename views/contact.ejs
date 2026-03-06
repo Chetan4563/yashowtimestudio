@@ -1,0 +1,376 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<style>
+  :root {
+    --lime: #C8F135;
+    --dark: #0C0F14;
+    --dark2: #131820;
+    --dark3: #1a2030;
+    --white: #FFFFFF;
+    --gray: #8a9bb0;
+    --card: #141b26;
+    --nav-h: 72px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ========================= LAYOUT ========================= */
+  .contact-wrap {
+    padding: calc(var(--nav-h) + 60px) 60px 100px;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 100px;
+    min-height: 100vh;
+    align-items: start;
+  }
+
+  /* ========================= LEFT — INFO ========================= */
+  .contact-info h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 100px);
+    line-height: 0.95;
+  }
+
+  .contact-info h1 .accent { color: var(--lime); }
+
+  .contact-info > p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--gray);
+    margin: 24px 0;
+    font-weight: 300;
+  }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: var(--lime);
+    flex-shrink: 0;
+  }
+
+  /* ---- Contact items ---- */
+  .contact-items {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* FIX: contact items are now <a> tags — reset link styles */
+  .contact-item {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    transition: color 0.3s;
+    text-decoration: none;   /* FIX: remove underline from <a> */
+    color: inherit;          /* FIX: inherit white from body */
+  }
+
+  .contact-item:hover .contact-item-val { color: var(--lime); }
+
+  .contact-item-icon { font-size: 24px; margin-top: 2px; flex-shrink: 0; }
+
+  .contact-item-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 6px;
+  }
+
+  .contact-item-val {
+    font-size: 16px;
+    transition: color 0.3s;
+    word-break: break-all; /* FIX: long emails don't overflow on mobile */
+  }
+
+  /* ========================= RIGHT — FORM ========================= */
+  .contact-form {
+    padding: 48px;
+    background: var(--card);
+    border: 1px solid rgba(200, 241, 53, 0.08);
+  }
+
+  .form-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    margin-bottom: 36px;
+    color: var(--white);
+  }
+
+  .form-group { margin-bottom: 24px; }
+
+  .form-group label {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--white);
+    padding: 14px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s;
+    resize: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--lime); }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
+
+  .form-group select option { background: var(--dark2); }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* ---- Submit button ---- */
+  .submit-btn {
+    width: 100%;
+    background: var(--lime);
+    color: var(--dark);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 18px;
+    border: none;
+    cursor: pointer; /* FIX: was cursor: none in original — now correctly pointer */
+    transition: background 0.3s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(.77, 0, .18, 1);
+  }
+
+  .submit-btn:hover::before { transform: scaleX(1); }
+  .submit-btn:hover { transform: translateY(-1px); }
+  .submit-btn span { position: relative; z-index: 1; }
+
+  /* ========================= FADE-IN ========================= */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(22px);
+    animation: fadeInUp 0.9s ease forwards;
+  }
+
+  .fade-in-delay-1 { animation-delay: 0.15s; }
+  .fade-in-delay-2 { animation-delay: 0.30s; }
+  .fade-in-delay-3 { animation-delay: 0.45s; }
+
+  @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+  /* ========================= RESPONSIVE ========================= */
+
+  /* Tablet */
+  @media (max-width: 1024px) {
+    .contact-wrap {
+      grid-template-columns: 1fr;
+      gap: 60px;
+      padding: calc(var(--nav-h) + 40px) 32px 80px;
+      min-height: auto;
+    }
+
+    .contact-form { padding: 40px 36px; }
+  }
+
+  /* Large mobile */
+  @media (max-width: 640px) {
+    .contact-wrap { padding: calc(var(--nav-h) + 24px) 20px 60px; gap: 40px; }
+    .contact-form  { padding: 28px 20px; }
+
+    .form-title    { font-size: 26px; margin-bottom: 24px; }
+
+    /* FIX: stack name + phone fields vertically on mobile */
+    .form-row      { grid-template-columns: 1fr; gap: 0; }
+
+    /* FIX: font-size 16px prevents iOS Safari auto-zoom on input focus */
+    .form-group input,
+    .form-group textarea,
+    .form-group select { font-size: 16px; padding: 12px 14px; }
+
+    .contact-item  { gap: 16px; padding: 20px 0; }
+    .contact-item-icon  { font-size: 20px; }
+    .contact-item-val   { font-size: 14px; }
+
+    /* FIX: taller submit button = easier tap target on mobile */
+    .submit-btn    { padding: 20px; font-size: 13px; }
+  }
+
+  /* Small mobile */
+  @media (max-width: 380px) {
+    .contact-wrap  { padding: calc(var(--nav-h) + 16px) 16px 48px; }
+    .contact-form  { padding: 24px 16px; }
+    .contact-info h1 { font-size: 46px; }
+    .contact-info > p { font-size: 14px; }
+  }
+</style>
+
+<!-- ========================= CONTACT ========================= -->
+<div class="contact-wrap">
+
+  <!-- Left: info -->
+  <div class="contact-info">
+    <div class="section-label fade-in">Get In Touch</div>
+    <h1 class="fade-in fade-in-delay-1">
+      Let's<br><span class="accent">Build</span><br>Together
+    </h1>
+    <p class="fade-in fade-in-delay-2">
+      Ready to scale your business? Tell us about your project and
+      let's figure out the best way to grow together.
+    </p>
+
+    <div class="contact-items fade-in fade-in-delay-3">
+
+      <!-- FIX: Instagram → links to profile page -->
+      <a href="https://instagram.com/ya.showtime" target="_blank" rel="noopener noreferrer" class="contact-item">
+        <div class="contact-item-icon">📸</div>
+        <div>
+          <div class="contact-item-label">Instagram</div>
+          <div class="contact-item-val">@ya.showtime</div>
+        </div>
+      </a>
+
+      <!-- FIX: Phone → opens dialer / WhatsApp on mobile -->
+      <a href="https://wa.me/919309901652" target="_blank" rel="noopener noreferrer" class="contact-item">
+        <div class="contact-item-icon">📞</div>
+        <div>
+          <div class="contact-item-label">Phone / WhatsApp</div>
+          <div class="contact-item-val">+91 93099 01652</div>
+        </div>
+      </a>
+
+      <!-- FIX: Email → opens mail client -->
+      <a href="mailto:yashow.offical@gmail.com" class="contact-item">
+        <div class="contact-item-icon">✉️</div>
+        <div>
+          <div class="contact-item-label">Email</div>
+          <div class="contact-item-val">yashow.offical@gmail.com</div>
+        </div>
+      </a>
+
+      <!-- Response time: not a link, stays as div -->
+      <div class="contact-item">
+        <div class="contact-item-icon">⏱️</div>
+        <div>
+          <div class="contact-item-label">Response Time</div>
+          <div class="contact-item-val">Within 24 Hours</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right: form -->
+  <form class="contact-form fade-in fade-in-delay-1" action="/api/contact" method="POST">
+
+    <div class="form-title">Start Your Project ✦</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" name="name" placeholder="Raj Sharma" required>
+      </div>
+      <div class="form-group">
+        <label>Phone / WhatsApp</label>
+        <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" name="email" placeholder="you@company.com" required>
+    </div>
+
+    <div class="form-group">
+      <label>Service Interested In</label>
+      <select name="service" required>
+        <option value="">Select a service...</option>
+        <option>Brand &amp; Creative</option>
+        <option>Marketing &amp; Growth</option>
+        <option>Tech &amp; Development</option>
+        <option>Social Media Management</option>
+        <option>Monthly Growth Plan</option>
+        <option>Multiple Services</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Project Type</label>
+      <select name="projectType" required>
+        <option value="">Select type...</option>
+        <option>One-time Project</option>
+        <option>Monthly Partnership</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Tell Us About Your Project</label>
+      <textarea name="message" rows="5"
+        placeholder="Describe your business, goals, and what you're looking to achieve..."
+        required></textarea>
+    </div>
+
+    <button class="submit-btn" type="submit">
+      <span>Send Message →</span>
+    </button>
+
+  </form>
+
+</div>
+
+<%- include('partials/footer') %>

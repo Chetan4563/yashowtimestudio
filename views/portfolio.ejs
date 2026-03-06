@@ -1,0 +1,585 @@
+<%- include("partials/head") %>
+<%- include("partials/navbar") %>
+
+<style>
+  :root {
+    --lime:  #C8F135;
+    --dark:  #0C0F14;
+    --dark2: #131820;
+    --dark3: #1a2030;
+    --white: #ffffff;
+    --gray:  #8a9bb0;
+    --card:  #141b26;
+    --nav-h: 72px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ── Shared ── */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: var(--lime);
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 8vw, 110px);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .section-title .accent { color: var(--lime); }
+
+  /* ── Fade-in ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(22px);
+    animation: fadeInUp 0.9s ease forwards;
+  }
+
+  .d1 { animation-delay: 0.15s; }
+  .d2 { animation-delay: 0.30s; }
+  .d3 { animation-delay: 0.45s; }
+
+  @keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══════════════════════════════════════
+     HERO
+  ═══════════════════════════════════════ */
+  .portfolio-hero {
+    padding: calc(var(--nav-h) + 60px) 60px 48px;
+  }
+
+  .hero-sub {
+    color: var(--gray);
+    font-size: 16px;
+    margin-top: 16px;
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 560px;
+  }
+
+  /* ═══════════════════════════════════════
+     FILTER BAR
+  ═══════════════════════════════════════ */
+  .portfolio-filter {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    border: 1px solid rgba(200,241,53,0.15);
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .filter-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 13px 24px;
+    text-decoration: none;
+    color: var(--gray);
+    border-right: 1px solid rgba(200,241,53,0.15);
+    transition: background 0.25s, color 0.25s;
+    white-space: nowrap;
+  }
+
+  .filter-btn:last-child { border-right: none; }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--lime);
+    color: var(--dark);
+  }
+
+  /* ═══════════════════════════════════════
+     PORTFOLIO GRID
+  ═══════════════════════════════════════ */
+  .portfolio-grid {
+    padding: 0 60px 80px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .portfolio-item {
+    aspect-ratio: 4 / 3;
+    background: var(--card);
+    border: 1px solid rgba(200,241,53,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── Media ── */
+  .portfolio-media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .portfolio-media img,
+  .portfolio-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .portfolio-item:hover .portfolio-media img,
+  .portfolio-item:hover .portfolio-media video {
+    transform: scale(1.05);
+  }
+
+  /* ── Overlay ── */
+  .portfolio-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(12,15,20,0.96) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.35s;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 28px;
+  }
+
+  .portfolio-item:hover .portfolio-overlay { opacity: 1; }
+
+  /* Always-visible overlay on touch devices */
+  @media (hover: none) {
+    .portfolio-overlay { opacity: 1; }
+  }
+
+  .portfolio-cat {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 6px;
+  }
+
+  .portfolio-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .portfolio-sub {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  /* ── Admin controls ── */
+  .portfolio-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .portfolio-actions button {
+    padding: 6px 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .portfolio-actions button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+
+  .btn-delete { background: #ff4d4d; color: #fff; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    padding: 80px 40px;
+    color: var(--gray);
+    grid-column: 1 / -1;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .empty-state a {
+    color: var(--lime);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* ═══════════════════════════════════════
+     CTA STRIP
+  ═══════════════════════════════════════ */
+  .portfolio-cta {
+    margin: 0 60px 80px;
+    padding: 60px;
+    background: var(--card);
+    border: 1px solid rgba(200,241,53,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    border-radius: 12px;
+  }
+
+  .portfolio-cta h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+
+  .portfolio-cta p {
+    font-size: 14px;
+    color: var(--gray);
+  }
+
+  .cta-btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+
+  .btn-primary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    background: var(--lime);
+    color: var(--dark);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 40px;
+    cursor: pointer;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+    border-radius: 40px;
+  }
+
+  .btn-primary:hover::before { transform: scaleX(1); }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-primary > * { position: relative; z-index: 1; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--white);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 14px 32px;
+    border-radius: 40px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.3s, color 0.3s, transform 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--lime);
+    color: var(--lime);
+    transform: translateY(-2px);
+  }
+
+  /* ═══════════════════════════════════════
+     ADD WORK — Admin only
+  ═══════════════════════════════════════ */
+  .add-work-wrap { padding: 0 60px 100px; }
+
+  .add-work-box {
+    max-width: 540px;
+    background: var(--card);
+    border: 1px solid rgba(200,241,53,0.15);
+    padding: 40px;
+  }
+
+  .add-work-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--white);
+  }
+
+  .add-work-box input,
+  .add-work-box select {
+    width: 100%;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    background: var(--dark2);
+    border: 1px solid rgba(200,241,53,0.15);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+
+  .add-work-box input:focus,
+  .add-work-box select:focus { border-color: rgba(200,241,53,0.5); }
+
+  .add-work-box input::placeholder { color: rgba(255,255,255,0.2); }
+  .add-work-box select option { background: var(--dark2); }
+
+  /* File input styling */
+  .add-work-box input[type="file"] {
+    padding: 10px 14px;
+    color: var(--gray);
+    cursor: pointer;
+  }
+
+  .add-work-box button[type="submit"] {
+    background: var(--lime);
+    color: var(--dark);
+    border: none;
+    padding: 13px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 40px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .add-work-box button[type="submit"]:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  /* ═══════════════════════════════════════
+     RESPONSIVE
+  ═══════════════════════════════════════ */
+  @media (max-width: 1024px) {
+    .portfolio-hero  { padding: calc(var(--nav-h) + 40px) 32px 36px; }
+    .portfolio-grid  { padding: 0 32px 60px; grid-template-columns: repeat(2,1fr); }
+    .add-work-wrap   { padding: 0 32px 80px; }
+    .portfolio-cta   { margin: 0 32px 60px; padding: 40px 36px; }
+    .portfolio-filter { width: 100%; }
+  }
+
+  @media (max-width: 768px) {
+    .portfolio-cta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .cta-btns { width: 100%; }
+  }
+
+  @media (max-width: 640px) {
+    .portfolio-hero { padding: calc(var(--nav-h) + 24px) 20px 28px; }
+
+    .hero-sub { font-size: 14px; }
+
+    /* Filter wraps into 2-per-row on small screens */
+    .portfolio-filter { width: 100%; }
+    .filter-btn { flex: 1 1 calc(50% - 1px); text-align: center; padding: 12px 8px; font-size: 10px; }
+
+    .portfolio-grid {
+      grid-template-columns: 1fr;
+      padding: 0 20px 48px;
+      gap: 12px;
+    }
+
+    /* On mobile, aspect-ratio auto so items don't get too tall */
+    .portfolio-item { aspect-ratio: 16 / 10; }
+
+    .portfolio-overlay {
+      opacity: 1;
+      background: linear-gradient(to top, rgba(12,15,20,0.92) 0%, transparent 55%);
+    }
+
+    .portfolio-name { font-size: 15px; }
+    .portfolio-sub  { font-size: 11px; }
+
+    .portfolio-cta {
+      margin: 0 20px 48px;
+      padding: 28px 20px;
+    }
+
+    .cta-btns {
+      flex-direction: column;
+    }
+
+    .cta-btns .btn-primary,
+    .cta-btns .btn-ghost {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .add-work-wrap { padding: 0 20px 60px; }
+    .add-work-box  { padding: 28px 20px; }
+  }
+
+  @media (max-width: 380px) {
+    .filter-btn { font-size: 9px; padding: 11px 6px; }
+    .portfolio-item { aspect-ratio: 4 / 3; }
+  }
+</style>
+
+<% const activeCat = cat || "all"; %>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
+<div class="portfolio-hero">
+  <div class="section-label fade-in">Our Work</div>
+  <h1 class="section-title fade-in d1">Port<span class="accent">folio</span></h1>
+  <p class="hero-sub fade-in d2">
+    Projects we've built, brands we've grown, and systems we've launched.
+  </p>
+
+  <!-- Category filter -->
+  <div class="portfolio-filter fade-in d3">
+    <a href="/portfolio"               class="filter-btn <%= activeCat==='all'       ? 'active':'' %>">All</a>
+    <a href="/portfolio?cat=brand"     class="filter-btn <%= activeCat==='brand'     ? 'active':'' %>">Branding</a>
+    <a href="/portfolio?cat=marketing" class="filter-btn <%= activeCat==='marketing' ? 'active':'' %>">Marketing</a>
+    <a href="/portfolio?cat=tech"      class="filter-btn <%= activeCat==='tech'      ? 'active':'' %>">Tech</a>
+    <a href="/portfolio?cat=social"    class="filter-btn <%= activeCat==='social'    ? 'active':'' %>">Social Media</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     GRID
+═══════════════════════════════════════════ -->
+<div class="portfolio-grid">
+
+  <% if (works && works.length > 0) { %>
+
+    <% works.forEach(function(w) { %>
+      <div class="portfolio-item fade-in">
+
+        <div class="portfolio-media">
+          <% if (w.media && w.media.type === 'video') { %>
+            <video src="<%= w.media.url %>" muted autoplay loop playsinline></video>
+          <% } else if (w.media && w.media.type === 'image') { %>
+            <img src="<%= w.media.url %>" alt="<%= w.title %>" loading="lazy">
+          <% } %>
+        </div>
+
+        <div class="portfolio-overlay">
+          <div class="portfolio-cat"><%= w.category %></div>
+          <div class="portfolio-name"><%= w.title %></div>
+          <div class="portfolio-sub"><%= w.subtitle %></div>
+
+          <% if (user && user.role === 'admin') { %>
+            <div class="portfolio-actions">
+              <form action="/portfolio/delete/<%= w._id %>" method="POST"
+                    onsubmit="return confirm('Delete this project?')">
+                <button type="submit" class="btn-delete">Delete</button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+
+      </div>
+    <% }); %>
+
+  <% } else { %>
+    <div class="empty-state">
+      No projects found for this category.<br>
+      <a href="/portfolio">View all work →</a>
+    </div>
+  <% } %>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CTA STRIP
+═══════════════════════════════════════════ -->
+<div class="portfolio-cta fade-in">
+  <div>
+    <h3>Like What You See?</h3>
+    <p>Let's build something great together.</p>
+  </div>
+  <div class="cta-btns">
+    <a href="/contact"  class="btn-primary">Start a Project →</a>
+    <a href="/services" class="btn-ghost">Our Services</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ADD WORK — admin only
+═══════════════════════════════════════════ -->
+<% if (user && user.role === 'admin') { %>
+  <div class="add-work-wrap">
+    <div class="add-work-box">
+      <h3>Add New Portfolio Work</h3>
+      <form action="/portfolio/add" method="POST" enctype="multipart/form-data">
+        <input  type="text" name="title"    placeholder="Project title"  required>
+        <input  type="text" name="subtitle" placeholder="Short subtitle" required>
+        <select name="category" required>
+          <option value="">Select category</option>
+          <option value="brand">Branding</option>
+          <option value="marketing">Marketing</option>
+          <option value="tech">Tech</option>
+          <option value="social">Social Media</option>
+        </select>
+        <input type="file" name="media" accept="image/*,video/*" required>
+        <button type="submit">Add Work</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<%- include("partials/footer") %>

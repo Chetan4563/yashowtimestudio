@@ -1,0 +1,656 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<style>
+  :root {
+    --lime:  #C8F135;
+    --dark:  #0C0F14;
+    --dark2: #131820;
+    --dark3: #1a2030;
+    --white: #FFFFFF;
+    --gray:  #8a9bb0;
+    --card:  #141b26;
+    --nav-h: 72px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ── Shared ── */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .section-label::before,
+  .section-label::after {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: var(--lime);
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 8vw, 110px);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .section-title .accent { color: var(--lime); }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    background: var(--lime);
+    color: var(--dark);
+    border: none;
+    padding: 15px 36px;
+    border-radius: 40px;
+    cursor: pointer;
+    overflow: hidden;
+    text-decoration: none;
+    transition: transform 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+    border-radius: 40px;
+  }
+
+  .btn-primary:hover::before { transform: scaleX(1); }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-primary > * { position: relative; z-index: 1; }
+
+  .btn-dark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: #111;
+    color: var(--white);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 16px 36px;
+    border-radius: 40px;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: border-color 0.3s, color 0.3s, transform 0.2s;
+  }
+
+  .btn-dark:hover {
+    border-color: var(--lime);
+    color: var(--lime);
+    transform: translateY(-2px);
+  }
+
+  /* ── Fade-in ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(22px);
+    animation: fadeInUp 0.9s ease forwards;
+  }
+
+  .d1 { animation-delay: 0.15s; }
+  .d2 { animation-delay: 0.30s; }
+  .d3 { animation-delay: 0.45s; }
+
+  @keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══════════════════════════════════════
+     HERO
+  ═══════════════════════════════════════ */
+  .services-hero {
+    padding: calc(var(--nav-h) + 60px) 60px 40px;
+    text-align: center;
+  }
+
+  .hero-sub {
+    color: var(--gray);
+    font-size: 16px;
+    margin-top: 20px;
+    max-width: 600px;
+    font-weight: 300;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* ── Tab nav ── */
+  .service-tabs {
+    display: flex;
+    gap: 0;
+    justify-content: center;
+    margin-top: 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .service-tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 14px 28px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.3s, border-color 0.3s;
+    margin-bottom: -1px;
+  }
+
+  .tab-btn:hover { color: var(--white); }
+  .tab-btn.active { color: var(--lime); border-bottom-color: var(--lime); }
+
+  /* ═══════════════════════════════════════
+     SERVICE BLOCKS
+  ═══════════════════════════════════════ */
+  .service-block {
+    padding: 80px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.4s;
+  }
+
+  .service-block:hover { background: rgba(200,241,53,0.015); }
+
+  /* Reverse layout for even blocks */
+  .service-block.reverse { direction: rtl; }
+  .service-block.reverse > * { direction: ltr; }
+
+  .service-block-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 10vw, 130px);
+    color: rgba(200,241,53,0.05);
+    line-height: 1;
+    margin-bottom: -20px;
+  }
+
+  .service-block-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .service-block-title .accent { color: var(--lime); }
+
+  .service-block-desc {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--gray);
+    margin: 20px 0;
+    font-weight: 300;
+  }
+
+  /* ── Services list ── */
+  .services-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-top: 32px;
+  }
+
+  .services-list-item {
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 13px;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.3s, padding-left 0.3s;
+  }
+
+  .services-list-item:hover {
+    color: var(--white);
+    padding-left: 4px;
+  }
+
+  .services-list-item::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Visual panel ── */
+  .service-block-visual {
+    background: var(--card);
+    border: 1px solid rgba(200,241,53,0.1);
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.4s;
+  }
+
+  .service-block:hover .service-block-visual {
+    border-color: rgba(200,241,53,0.2);
+  }
+
+  .service-block-visual-icon {
+    font-size: 100px;
+    opacity: 0.1;
+    position: absolute;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+
+  .service-block:hover .service-block-visual-icon {
+    opacity: 0.18;
+    transform: scale(1.1);
+  }
+
+  .service-block-visual-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .service-block-visual-content .big-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 72px);
+    color: var(--lime);
+    line-height: 1;
+  }
+
+  .service-block-visual-content p {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-top: 10px;
+  }
+
+  /* ── Block CTA ── */
+  .block-cta {
+    margin-top: 32px;
+  }
+
+  /* ═══════════════════════════════════════
+     CTA SECTION
+  ═══════════════════════════════════════ */
+  .cta-section {
+    margin: 0 60px 120px;
+    padding: 72px 60px;
+    background: linear-gradient(135deg, #141b26, #0c0f14);
+    border: 1px solid rgba(200,241,53,0.13);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 16px;
+    gap: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(200,241,53,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.05;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-section p {
+    color: var(--gray);
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  /* ═══════════════════════════════════════
+     RESPONSIVE
+  ═══════════════════════════════════════ */
+  @media (max-width: 1024px) {
+    .services-hero { padding: calc(var(--nav-h) + 40px) 32px 32px; }
+
+    .service-block {
+      grid-template-columns: 1fr;
+      padding: 60px 32px;
+      gap: 40px;
+      direction: ltr !important;
+    }
+
+    .service-block > * { direction: ltr !important; }
+
+    /* Visual goes below content on tablet */
+    .service-block-visual { order: 2; }
+    .service-block > div:first-child { order: 1; }
+
+    .cta-section { margin: 0 32px 80px; padding: 48px 36px; }
+    .cta-actions { justify-content: flex-start; }
+  }
+
+  @media (max-width: 768px) {
+    .service-block-visual { height: 280px; }
+
+    .service-block-visual-content .big-text { font-size: 52px; }
+
+    .services-list { grid-template-columns: 1fr; }
+    .services-list-item { padding: 11px 0; }
+  }
+
+  @media (max-width: 640px) {
+    .services-hero {
+      padding: calc(var(--nav-h) + 24px) 20px 24px;
+    }
+
+    .hero-sub { font-size: 14px; }
+
+    .service-tabs { justify-content: flex-start; padding: 0 20px; }
+    .tab-btn { padding: 12px 18px; font-size: 10px; }
+
+    .service-block {
+      padding: 48px 20px;
+      gap: 28px;
+    }
+
+    .service-block-num { font-size: 72px; margin-bottom: -12px; }
+
+    .service-block-visual { height: 220px; }
+    .service-block-visual-icon { font-size: 70px; }
+    .service-block-visual-content .big-text { font-size: 40px; }
+    .service-block-visual-content p { font-size: 10px; letter-spacing: 2px; }
+
+    .cta-section {
+      margin: 0 20px 60px;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 36px 24px;
+    }
+
+    .cta-actions {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .cta-actions .btn-primary,
+    .cta-actions .btn-dark {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .service-block { padding: 40px 16px; }
+    .service-block-title { font-size: 36px; }
+  }
+</style>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════ -->
+<div class="services-hero">
+  <div class="section-label fade-in">What We Offer</div>
+  <h1 class="section-title fade-in d1">Our <span class="accent">Services</span></h1>
+  <p class="hero-sub fade-in d2">
+    Four core pillars. One execution framework. Everything your brand needs to grow — built together.
+  </p>
+
+  <!-- Quick-jump tab nav -->
+  <nav class="service-tabs fade-in d3" aria-label="Service sections">
+    <button class="tab-btn active" onclick="scrollTo('brand')">Brand &amp; Creative</button>
+    <button class="tab-btn" onclick="scrollTo('marketing')">Marketing &amp; Growth</button>
+    <button class="tab-btn" onclick="scrollTo('tech')">Tech &amp; Dev</button>
+    <button class="tab-btn" onclick="scrollTo('social')">Social Media</button>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SERVICE 1 — Brand & Creative
+═══════════════════════════════════════════ -->
+<div class="service-block fade-in" id="brand">
+  <div>
+    <div class="service-block-num">01</div>
+    <h2 class="service-block-title"><span class="accent">Brand</span> &amp;<br>Creative</h2>
+    <p class="service-block-desc">
+      Visual identity and content creation that makes your brand unforgettable. From logo to full brand
+      systems — we design everything with purpose.
+    </p>
+    <div class="services-list">
+      <div class="services-list-item">Logo &amp; Brand Identity</div>
+      <div class="services-list-item">Graphic Design</div>
+      <div class="services-list-item">Social Media Creatives</div>
+      <div class="services-list-item">Video Editing</div>
+      <div class="services-list-item">Photography</div>
+      <div class="services-list-item">Scriptwriting</div>
+      <div class="services-list-item">Brand Guidelines</div>
+      <div class="services-list-item">Reels &amp; Shorts</div>
+    </div>
+    <div class="block-cta">
+      <a href="/contact?service=brand" class="btn-primary">Get a Quote →</a>
+    </div>
+  </div>
+  <div class="service-block-visual" style="background: linear-gradient(135deg, #1a2010, #141b0f);">
+    <div class="service-block-visual-icon">🎨</div>
+    <div class="service-block-visual-content">
+      <div class="big-text">BRAND</div>
+      <p>Visual Identity &amp; Content</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SERVICE 2 — Marketing & Growth
+═══════════════════════════════════════════ -->
+<div class="service-block reverse fade-in" id="marketing">
+  <div>
+    <div class="service-block-num">02</div>
+    <h2 class="service-block-title"><span class="accent">Marketing</span><br>&amp; Growth</h2>
+    <p class="service-block-desc">
+      Performance + organic growth strategies that drive real results. From paid ads to SEO — we build
+      systems that scale your business.
+    </p>
+    <div class="services-list">
+      <div class="services-list-item">Meta Ads</div>
+      <div class="services-list-item">Google Ads</div>
+      <div class="services-list-item">YouTube Ads</div>
+      <div class="services-list-item">SEO Optimization</div>
+      <div class="services-list-item">Email Marketing</div>
+      <div class="services-list-item">WhatsApp Marketing</div>
+      <div class="services-list-item">Funnel Strategy</div>
+      <div class="services-list-item">Conversion Optimization</div>
+      <div class="services-list-item">Landing Pages</div>
+      <div class="services-list-item">Social Media Creatives</div>
+    </div>
+    <div class="block-cta">
+      <a href="/contact?service=marketing" class="btn-primary">Get a Quote →</a>
+    </div>
+  </div>
+  <div class="service-block-visual" style="background: linear-gradient(135deg, #1a1520, #100d17);">
+    <div class="service-block-visual-icon">📈</div>
+    <div class="service-block-visual-content">
+      <div class="big-text">GROW</div>
+      <p>Performance + Organic</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SERVICE 3 — Tech & Development
+═══════════════════════════════════════════ -->
+<div class="service-block fade-in" id="tech">
+  <div>
+    <div class="service-block-num">03</div>
+    <h2 class="service-block-title"><span class="accent">Tech</span> &amp;<br>Development</h2>
+    <p class="service-block-desc">
+      Digital infrastructure built to perform. From business websites to e-commerce stores — your online
+      presence, engineered for growth.
+    </p>
+    <div class="services-list">
+      <div class="services-list-item">Business Websites</div>
+      <div class="services-list-item">E-commerce Stores</div>
+      <div class="services-list-item">WordPress / Shopify</div>
+      <div class="services-list-item">Custom Web Dev</div>
+      <div class="services-list-item">UI/UX Design</div>
+      <div class="services-list-item">App Design</div>
+      <div class="services-list-item">Website Optimization</div>
+      <div class="services-list-item">CRM Setup</div>
+    </div>
+    <div class="block-cta">
+      <a href="/contact?service=tech" class="btn-primary">Get a Quote →</a>
+    </div>
+  </div>
+  <div class="service-block-visual" style="background: linear-gradient(135deg, #101a20, #0d1419);">
+    <div class="service-block-visual-icon">💻</div>
+    <div class="service-block-visual-content">
+      <div class="big-text">TECH</div>
+      <p>Digital Infrastructure</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SERVICE 4 — Social Media
+═══════════════════════════════════════════ -->
+<div class="service-block reverse fade-in" id="social">
+  <div>
+    <div class="service-block-num">04</div>
+    <h2 class="service-block-title"><span class="accent">Social</span><br>Media</h2>
+    <p class="service-block-desc">
+      End-to-end management and growth across major platforms. We handle content, scheduling, community,
+      and analytics — so you don't have to.
+    </p>
+    <div class="services-list">
+      <div class="services-list-item">Instagram</div>
+      <div class="services-list-item">YouTube</div>
+      <div class="services-list-item">LinkedIn</div>
+      <div class="services-list-item">Facebook</div>
+      <div class="services-list-item">Content Calendar</div>
+      <div class="services-list-item">Posting &amp; Scheduling</div>
+      <div class="services-list-item">Community Management</div>
+      <div class="services-list-item">Growth Strategy</div>
+      <div class="services-list-item">Analytics Reporting</div>
+      <div class="services-list-item">Engagement Growth</div>
+    </div>
+    <div class="block-cta">
+      <a href="/contact?service=social" class="btn-primary">Get a Quote →</a>
+    </div>
+  </div>
+  <div class="service-block-visual" style="background: linear-gradient(135deg, #1a1510, #17120d);">
+    <div class="service-block-visual-icon">📱</div>
+    <div class="service-block-visual-content">
+      <div class="big-text">SOCIAL</div>
+      <p>Full Platform Management</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CTA
+═══════════════════════════════════════════ -->
+<div class="cta-section fade-in">
+  <div>
+    <h2>Let's Build Your<br>Growth System</h2>
+    <p>Project-based or monthly plans — we adapt to your stage.</p>
+  </div>
+  <div class="cta-actions">
+    <a href="/contact" class="btn-primary">Start Now →</a>
+    <a href="/portfolio" class="btn-dark">View Work</a>
+  </div>
+</div>
+
+<script>
+  /* ── Tab scroll ── */
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const offset = parseInt(getComputedStyle(document.documentElement)
+      .getPropertyValue('--nav-h')) || 72;
+    window.scrollTo({ top: el.offsetTop - offset - 16, behavior: 'smooth' });
+
+    // Update active tab
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+
+  /* ── Highlight tab on scroll ── */
+  const sections = ['brand','marketing','tech','social'].map(id => document.getElementById(id));
+  const tabs     = document.querySelectorAll('.tab-btn');
+
+  window.addEventListener('scroll', function () {
+    const navH = 80;
+    let current = 0;
+    sections.forEach((s, i) => {
+      if (s && s.getBoundingClientRect().top <= navH + 40) current = i;
+    });
+    tabs.forEach(t => t.classList.remove('active'));
+    if (tabs[current]) tabs[current].classList.add('active');
+  }, { passive: true });
+</script>
+
+<%- include('partials/footer') %>

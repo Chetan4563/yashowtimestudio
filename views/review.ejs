@@ -1,0 +1,453 @@
+<%- include('partials/navbar') %>
+<%- include('partials/head') %>
+
+<style>
+  :root {
+    --lime: #C8F135;
+    --dark: #0C0F14;
+    --dark2: #131820;
+    --dark3: #1a2030;
+    --white: #FFFFFF;
+    --gray: #8a9bb0;
+    --card: #141b26;
+    --nav-h: 72px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ── Hero ── */
+  .reviews-hero { padding: calc(var(--nav-h) + 60px) 60px 40px; }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::before { content: ''; width: 28px; height: 1px; background: var(--lime); flex-shrink: 0; }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 110px);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .section-title .accent { color: var(--lime); }
+
+  .hero-sub {
+    color: var(--gray);
+    font-size: 16px;
+    margin-top: 12px;
+    font-weight: 300;
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  /* ── Grid ── */
+  .reviews-grid {
+    padding: 0 60px 60px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .review-card {
+    display: block;
+    text-decoration: none;
+    background: var(--card);
+    border: 1px solid rgba(200, 241, 53, 0.08);
+    padding: 28px;
+    transition: transform 0.3s, border-color 0.3s;
+    cursor: pointer;
+  }
+
+  .review-card:hover { transform: translateY(-4px); border-color: rgba(200, 241, 53, 0.3); }
+
+  .review-stars { color: var(--lime); letter-spacing: 2px; font-size: 16px; }
+  .review-msg { margin-top: 12px; font-size: 14px; color: var(--gray); line-height: 1.6; }
+
+  .review-author {
+    margin-top: 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: var(--white);
+    opacity: 0.6;
+  }
+
+  /* ── Modal ── */
+  .review-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 9999;
+    padding: 20px; /* FIX: prevents modal from touching screen edges on mobile */
+  }
+
+  .review-modal:target { opacity: 1; pointer-events: auto; }
+
+  .review-modal-box {
+    background: var(--card);
+    padding: 36px;
+    max-width: 540px;
+    width: 100%; /* FIX: was 92%, now fills available space within padded parent */
+    border: 1px solid rgba(200, 241, 53, 0.2);
+    max-height: 90vh;           /* FIX: prevents overflow on small screens */
+    overflow-y: auto;           /* FIX: scrollable when content is tall */
+  }
+
+  .review-modal-stars { color: var(--lime); letter-spacing: 2px; font-size: 18px; margin-bottom: 12px; }
+  .review-modal-msg { color: var(--gray); line-height: 1.7; font-size: 15px; }
+
+  /* ── Edit box ── */
+  .edit-box {
+    margin-top: 24px;
+    border-top: 1px dashed rgba(200, 241, 53, 0.2);
+    padding-top: 20px;
+  }
+
+  .edit-box-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 14px;
+  }
+
+  .edit-box textarea,
+  .edit-box select {
+    width: 100%;
+    background: var(--dark2);
+    border: 1px solid rgba(200, 241, 53, 0.15);
+    color: var(--white);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+    resize: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .edit-box textarea:focus,
+  .edit-box select:focus { border-color: rgba(200, 241, 53, 0.5); }
+  .edit-box select option { background: var(--dark2); }
+
+  .edit-box-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+  .btn-update, .btn-delete {
+    padding: 9px 18px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .btn-update { background: var(--lime); color: var(--dark); }
+  .btn-delete { background: #ff4d4d; color: #fff; }
+  .btn-update:hover, .btn-delete:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* FIX: Close button now uses href="#" so it closes modal without page navigation */
+  .close-btn {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--lime);
+    border: 1px solid rgba(200, 241, 53, 0.3);
+    padding: 8px 20px;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .close-btn:hover { background: var(--lime); color: var(--dark); }
+
+  /* ── Add Review ── */
+  .add-review-wrap { padding: 0 60px 100px; }
+
+  .add-review-box {
+    max-width: 520px;
+    background: var(--card);
+    padding: 36px;
+    border: 1px solid rgba(200, 241, 53, 0.15);
+  }
+
+  .add-review-box h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+
+  .add-review-box > p { font-size: 13px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; }
+
+  .add-review-box input,
+  .add-review-box textarea,
+  .add-review-box select {
+    width: 100%;
+    background: var(--dark2);
+    border: 1px solid rgba(200, 241, 53, 0.15);
+    color: var(--white);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+    resize: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .add-review-box input:focus,
+  .add-review-box textarea:focus,
+  .add-review-box select:focus { border-color: rgba(200, 241, 53, 0.5); }
+
+  .add-review-box input::placeholder,
+  .add-review-box textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
+  .add-review-box select option { background: var(--dark2); }
+
+  .add-review-box button[type="submit"] {
+    background: var(--lime);
+    color: var(--dark);
+    border: none;
+    padding: 13px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 40px;
+    transition: opacity 0.2s, transform 0.2s;
+    width: 100%; /* FIX: full-width on mobile for easier tap */
+  }
+
+  .add-review-box button[type="submit"]:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    color: var(--gray);
+    font-size: 15px;
+    padding: 40px 0;
+    text-align: center;
+  }
+
+  /* ── Animations ── */
+  .fade-in { opacity: 0; transform: translateY(22px); animation: fadeInUp 0.9s ease forwards; }
+  .fade-in-delay-1 { animation-delay: 0.15s; }
+  .fade-in-delay-2 { animation-delay: 0.3s; }
+
+  @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+  /* ═══════════════════════════════════════
+     RESPONSIVE
+  ═══════════════════════════════════════ */
+
+  /* Tablet */
+  @media (max-width: 900px) {
+    .reviews-hero    { padding: calc(var(--nav-h) + 40px) 32px 32px; }
+    .reviews-grid    { grid-template-columns: repeat(2, 1fr); padding: 0 32px 40px; gap: 16px; }
+    .add-review-wrap { padding: 0 32px 60px; }
+    .add-review-box  { max-width: 100%; }
+  }
+
+  /* Large mobile */
+  @media (max-width: 640px) {
+    .reviews-hero    { padding: calc(var(--nav-h) + 24px) 20px 24px; }
+    .hero-sub        { font-size: 14px; }
+
+    .reviews-grid    {
+      grid-template-columns: 1fr;
+      padding: 0 20px 32px;
+      gap: 14px;
+    }
+
+    .review-card     { padding: 20px; }
+    .review-stars    { font-size: 14px; }
+    .review-msg      { font-size: 13px; }
+
+    /* Modal full-screen on mobile */
+    .review-modal    { padding: 12px; align-items: flex-end; } /* FIX: sheet-style from bottom */
+    .review-modal-box {
+      padding: 24px 20px;
+      border-radius: 0; /* flat edges on small screens */
+      max-height: 85vh;
+    }
+
+    .review-modal-stars { font-size: 16px; }
+    .review-modal-msg   { font-size: 14px; }
+
+    .btn-update, .btn-delete { width: 100%; text-align: center; } /* FIX: full-width tap targets */
+
+    .add-review-wrap { padding: 0 20px 48px; }
+    .add-review-box  { padding: 24px 20px; }
+
+    .add-review-box input,
+    .add-review-box textarea,
+    .add-review-box select { font-size: 16px; } /* FIX: prevents iOS auto-zoom on focus */
+  }
+
+  /* Small mobile */
+  @media (max-width: 380px) {
+    .section-title   { font-size: 42px; }
+    .review-card     { padding: 16px; }
+    .add-review-box  { padding: 20px 16px; }
+  }
+</style>
+
+<!-- ========================= HERO ========================= -->
+<div class="reviews-hero">
+  <div class="section-label fade-in">Testimonials</div>
+  <h1 class="section-title fade-in fade-in-delay-1">
+    Client <span class="accent">Reviews</span>
+  </h1>
+  <p class="hero-sub fade-in fade-in-delay-2">
+    What our clients say about our work and collaboration.
+  </p>
+</div>
+
+<!-- ========================= GRID ========================= -->
+<div class="reviews-grid">
+  <% if (reviews && reviews.length) { %>
+    <% reviews.forEach((r, i) => { %>
+      <a href="#review-<%= i %>" class="review-card">
+        <div class="review-stars">
+          <% for (let s = 0; s < r.rating; s++) { %>★<% } %>
+        </div>
+        <div class="review-msg">
+          <%= r.message.length > 110 ? r.message.substring(0, 110) + "..." : r.message %>
+        </div>
+        <% if (r.name) { %>
+          <div class="review-author">— <%= r.name %></div>
+        <% } %>
+      </a>
+    <% }) %>
+  <% } else { %>
+    <div class="empty-state">No reviews yet. Be the first to share your experience!</div>
+  <% } %>
+</div>
+
+<!-- ========================= MODALS ========================= -->
+<% if (reviews && reviews.length) { %>
+  <% reviews.forEach((r, i) => { %>
+
+    <%
+      const canEdit = !!user && (
+        user.role === "admin"   ||
+        user.role === 1         ||
+        user.isAdmin === true   ||
+        (
+          r.user != null &&
+          String(r.user._id || r.user) === String(user._id)
+        )
+      );
+    %>
+
+    <div id="review-<%= i %>" class="review-modal">
+      <div class="review-modal-box">
+
+        <div class="review-modal-stars">
+          <% for (let s = 0; s < r.rating; s++) { %>★<% } %>
+        </div>
+
+        <div class="review-modal-msg"><%= r.message %></div>
+
+        <% if (r.name) { %>
+          <div class="review-author" style="margin-top:12px">— <%= r.name %></div>
+        <% } %>
+
+        <!-- Edit / Delete — owner or admin only -->
+        <% if (canEdit) { %>
+          <div class="edit-box">
+            <div class="edit-box-title">Edit Review</div>
+
+            <form action="/review/<%= r._id %>/update" method="POST">
+              <textarea name="message" rows="4" required><%= r.message %></textarea>
+              <select name="rating" required>
+                <% [5,4,3,2,1].forEach(n => { %>
+                  <option value="<%= n %>" <%= r.rating === n ? 'selected' : '' %>>
+                    <%= n %> Star<%= n > 1 ? 's' : '' %>
+                  </option>
+                <% }) %>
+              </select>
+              <div class="edit-box-actions">
+                <button type="submit" class="btn-update">Update</button>
+              </div>
+            </form>
+
+            <form action="/review/<%= r._id %>/delete" method="POST" style="margin-top:10px">
+              <button type="submit" class="btn-delete">Delete</button>
+            </form>
+          </div>
+        <% } %>
+
+        <!-- FIX: href="#" closes the modal by clearing the hash — no page navigation -->
+        <a href="#" class="close-btn">✕ Close</a>
+
+      </div>
+    </div>
+
+  <% }) %>
+<% } %>
+
+<!-- ========================= ADD REVIEW (logged-in users only) ========================= -->
+<% if (user) { %>
+  <div class="add-review-wrap">
+    <div class="add-review-box">
+      <h3>Leave a Review</h3>
+      <p>Share your honest experience — it helps others understand the quality of our work.</p>
+      <form action="/review" method="POST">
+        <input type="text" name="name" placeholder="Your name" required>
+        <textarea name="message" placeholder="Your review" rows="4" required></textarea>
+        <select name="rating" required>
+          <option value="">Select rating</option>
+          <option value="5">★★★★★ (5 stars)</option>
+          <option value="4">★★★★ (4 stars)</option>
+          <option value="3">★★★ (3 stars)</option>
+          <option value="2">★★ (2 stars)</option>
+          <option value="1">★ (1 star)</option>
+        </select>
+        <button type="submit">Submit Review</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

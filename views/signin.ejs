@@ -1,0 +1,339 @@
+<%- include('partials/head') %>
+  <%- include('partials/navbar') %>
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: #0c0f14;
+        color: #fff;
+        min-height: 100vh;
+      }
+
+      .signin-wrap {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 100px 20px 60px;
+      }
+
+      .signin-box {
+        width: 100%;
+        max-width: 440px;
+        background: #141b26;
+        padding: 40px 36px;
+        border-radius: 16px;
+        border: 1px solid rgba(200, 241, 53, 0.1);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+      }
+
+      .signin-title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .signin-subtitle {
+        font-size: 13px;
+        color: #8a9bb0;
+        text-align: center;
+        margin-bottom: 28px;
+      }
+
+      .signin-input {
+        width: 100%;
+        padding: 13px 16px;
+        margin-bottom: 14px;
+        border-radius: 10px;
+        border: 1.5px solid #1e2a3a;
+        background: #0c0f14;
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: .25s;
+      }
+
+      .signin-input:focus {
+        border-color: #c8f135;
+        box-shadow: 0 0 0 3px rgba(200, 241, 53, .08);
+      }
+
+      .signin-input::placeholder {
+        color: rgba(255, 255, 255, .18);
+      }
+
+      /* password wrap */
+
+      .pw-wrap {
+        position: relative;
+        margin-bottom: 14px;
+      }
+
+      .pw-wrap .signin-input {
+        margin-bottom: 0;
+        padding-right: 50px;
+      }
+
+      .pw-toggle {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #8a9bb0;
+        border-radius: 8px;
+        transition: .2s;
+      }
+
+      .pw-toggle:hover {
+        color: #c8f135;
+        background: rgba(200, 241, 53, 0.08);
+      }
+
+      .pw-toggle svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* forgot */
+
+      .forgot-row {
+        text-align: right;
+        margin-bottom: 20px;
+      }
+
+      .forgot-row a {
+        font-size: 12px;
+        color: #8a9bb0;
+        text-decoration: none;
+      }
+
+      .forgot-row a:hover {
+        color: #c8f135
+      }
+
+      /* button */
+
+      .signin-btn {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        background: #c8f135;
+        color: #0c0f14;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 6px;
+      }
+
+      .signin-btn:hover {
+        opacity: .9;
+        transform: translateY(-1px);
+      }
+
+      /* divider */
+
+      .or-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 20px 0;
+        font-size: 12px;
+        color: #2c3444;
+      }
+
+      .or-divider::before,
+      .or-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #1e2a3a;
+      }
+
+      /* google */
+
+      .signin-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 13px;
+        border-radius: 10px;
+        border: 1.5px solid #1e2a3a;
+        text-decoration: none;
+        color: #fff;
+      }
+
+      .signin-google:hover {
+        background: #1a2030;
+      }
+
+      .google-icon {
+        width: 20px;
+      }
+
+      /* links */
+
+      .signin-links {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 13px;
+        color: #8a9bb0;
+      }
+
+      .signin-links a {
+        color: #c8f135;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .signin-links a:hover {
+        text-decoration: underline
+      }
+
+      .msg-error {
+        margin-top: 14px;
+        padding: 11px 14px;
+        border-radius: 8px;
+        background: rgba(255, 107, 107, .08);
+        border: 1px solid rgba(255, 107, 107, .25);
+        color: #ff6b6b;
+        font-size: 13px;
+        text-align: center;
+      }
+
+      @media(max-width:480px) {
+        .signin-wrap {
+          padding: 80px 16px 48px
+        }
+
+        .signin-box {
+          padding: 28px 20px
+        }
+
+        .signin-input {
+          font-size: 16px
+        }
+      }
+    </style>
+
+
+    <div class="signin-wrap">
+
+      <div class="signin-box">
+
+        <div class="signin-title">Welcome Back</div>
+        <div class="signin-subtitle">Sign in to your account to continue</div>
+
+        <form action="/signin" method="POST">
+
+          <input class="signin-input" type="text" name="login" placeholder="Email address" required
+            autocomplete="email" />
+
+          <div class="pw-wrap">
+
+            <input class="signin-input" type="password" name="password" id="password" placeholder="Password" required
+              autocomplete="current-password" />
+
+            <button type="button" class="pw-toggle" onclick="togglePassword()">
+
+              <!-- eye icon -->
+              <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5
+c4.477 0 8.268 2.943 9.542 7
+-1.274 4.057-5.065 7-9.542 7
+-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+
+              <!-- eye off -->
+              <svg id="eyeClose" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" style="display:none">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19
+c-4.478 0-8.268-2.943-9.542-7
+a9.956 9.956 0 012.042-3.362M6.223 6.223
+A9.956 9.956 0 0112 5
+c4.478 0 8.268 2.943 9.542 7
+a9.956 9.956 0 01-4.132 5.411M3 3l18 18" />
+              </svg>
+
+            </button>
+
+          </div>
+
+          <div class="forgot-row">
+            <a href="/forgot-password">Forgot password?</a>
+          </div>
+
+          <button class="signin-btn" type="submit">Sign In</button>
+
+        </form>
+
+        <div class="or-divider">or</div>
+
+        <a class="signin-google" href="/google">
+
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-icon" />
+
+          Continue with Google
+
+        </a>
+
+        <div class="signin-links">
+          Don't have an account?
+          <a href="/signup">Create one</a>
+        </div>
+
+        <% if (typeof signinError !=="undefined" && signinError) { %>
+          <div class="msg-error">
+            <%= signinError %>
+          </div>
+          <% } %>
+
+      </div>
+    </div>
+
+
+    <script>
+
+      function togglePassword() {
+
+        const password = document.getElementById("password");
+        const eyeOpen = document.getElementById("eyeOpen");
+        const eyeClose = document.getElementById("eyeClose");
+
+        if (password.type === "password") {
+          password.type = "text";
+          eyeOpen.style.display = "none";
+          eyeClose.style.display = "block";
+        }
+        else {
+          password.type = "password";
+          eyeOpen.style.display = "block";
+          eyeClose.style.display = "none";
+        }
+
+      }
+
+    </script>
+
+
+    <%- include('partials/footer') %>

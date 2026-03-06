@@ -1,0 +1,369 @@
+<%- include("partials/head") %>
+<%- include("partials/navbar") %>
+
+<style>
+  :root {
+    --dark:  #0C0F14;
+    --dark2: #131820;
+    --dark3: #1a2030;
+    --card:  #141b26;
+    --lime:  #C8F135;
+    --gray:  #8a9bb0;
+    --white: #ffffff;
+    --nav-h: 72px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ═══════════════════════════════
+     PAGE WRAP
+  ═══════════════════════════════ */
+  .contacts-wrap {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 40px) 32px 80px;
+  }
+
+  /* ═══════════════════════════════
+     HEADER ROW
+  ═══════════════════════════════ */
+  .contacts-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .contacts-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contacts-title span {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--gray);
+    background: var(--dark3);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(200,241,53,0.1);
+  }
+
+  /* ═══════════════════════════════
+     TABLE — desktop
+  ═══════════════════════════════ */
+  .table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(200,241,53,0.08);
+  }
+
+  .contacts-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    min-width: 780px;
+  }
+
+  .contacts-table thead {
+    background: var(--dark3);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .contacts-table th {
+    padding: 13px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--lime);
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(200,241,53,0.1);
+  }
+
+  .contacts-table td {
+    padding: 14px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid #1a2233;
+    vertical-align: top;
+    color: var(--white);
+  }
+
+  .contacts-table tbody tr:last-child td { border-bottom: none; }
+
+  .contacts-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+  /* Column styles */
+  .td-name   { font-weight: 600; white-space: nowrap; }
+  .td-phone  { white-space: nowrap; color: var(--gray); }
+  .td-email  { color: #7ecfff; font-size: 12px; word-break: break-all; }
+
+  .td-service {
+    white-space: nowrap;
+  }
+
+  .service-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(200,241,53,0.1);
+    color: var(--lime);
+    border: 1px solid rgba(200,241,53,0.2);
+  }
+
+  .td-type  { color: var(--gray); font-size: 12px; }
+
+  .td-msg {
+    max-width: 240px;
+    color: var(--gray);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* truncate long messages */
+  .msg-inner {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .td-date {
+    color: var(--gray);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* ── Delete button ── */
+  .btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: transparent;
+    color: #ff6b6b;
+    border: 1px solid rgba(255,107,107,0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .btn-delete:hover {
+    background: #ff4d4d;
+    color: #fff;
+    border-color: #ff4d4d;
+  }
+
+  .td-action { white-space: nowrap; }
+
+  /* Mobile card delete */
+  .card-delete {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .card-delete .btn-delete { width: 100%; justify-content: center; }
+
+  /* ═══════════════════════════════
+     EMPTY STATE
+  ═══════════════════════════════ */
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--gray);
+    font-size: 15px;
+  }
+
+  /* ═══════════════════════════════
+     MOBILE CARDS (< 640px)
+     Hide table, show cards instead
+  ═══════════════════════════════ */
+  .contact-cards { display: none; }
+
+  @media (max-width: 640px) {
+    .contacts-wrap { padding: calc(var(--nav-h) + 24px) 16px 60px; }
+
+    .table-wrap     { display: none; }
+    .contact-cards  { display: flex; flex-direction: column; gap: 14px; }
+
+    .contact-card {
+      background: var(--card);
+      border: 1px solid rgba(200,241,53,0.08);
+      border-radius: 10px;
+      padding: 18px 16px;
+    }
+
+    .card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .card-name {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .card-date {
+      font-size: 11px;
+      color: var(--gray);
+      white-space: nowrap;
+    }
+
+    .card-field {
+      font-size: 12px;
+      color: var(--gray);
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    .card-field strong {
+      color: var(--white);
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .card-msg {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.6;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 10px;
+      margin-top: 6px;
+    }
+  }
+</style>
+
+<div class="contacts-wrap">
+
+  <div class="contacts-header">
+    <div class="contacts-title">
+      Contact Requests
+      <% if (typeof contacts !== 'undefined' && contacts.length) { %>
+        <span><%= contacts.length %> total</span>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- ═══════ DESKTOP TABLE ═══════ -->
+  <div class="table-wrap">
+    <table class="contacts-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Service</th>
+          <th>Project Type</th>
+          <th>Message</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (typeof contacts !== 'undefined' && contacts.length > 0) { %>
+          <% contacts.forEach(function(c) { %>
+            <tr>
+              <td class="td-name"><%= c.name || '—' %></td>
+              <td class="td-phone"><%= c.phone || '—' %></td>
+              <td class="td-email"><%= c.email || '—' %></td>
+              <td class="td-service">
+                <% if (c.service) { %>
+                  <span class="service-badge"><%= c.service %></span>
+                <% } else { %>—<% } %>
+              </td>
+              <td class="td-type"><%= c.projectType || '—' %></td>
+              <td class="td-msg">
+                <div class="msg-inner"><%= c.message || '—' %></div>
+              </td>
+              <td class="td-date">
+                <% try { %>
+                  <%= c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—' %>
+                <% } catch(e) { %>—<% } %>
+              </td>
+              <td class="td-action">
+                <form action="/admin/contacts/<%= c._id %>/delete" method="POST"
+                      onsubmit="return confirm('Delete this request from ' + '<%= c.name %>' + '?')">
+                  <button type="submit" class="btn-delete">✕ Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="7" class="empty-state">No contact requests yet.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══════ MOBILE CARDS ═══════ -->
+  <div class="contact-cards">
+    <% if (typeof contacts !== 'undefined' && contacts.length > 0) { %>
+      <% contacts.forEach(function(c) { %>
+        <div class="contact-card">
+          <div class="card-row">
+            <div class="card-name"><%= c.name || '—' %></div>
+            <div class="card-date">
+              <% try { %>
+                <%= c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—' %>
+              <% } catch(e) { %>—<% } %>
+            </div>
+          </div>
+          <div class="card-field"><strong>Phone:</strong><%= c.phone || '—' %></div>
+          <div class="card-field"><strong>Email:</strong><%= c.email || '—' %></div>
+          <div class="card-field"><strong>Service:</strong><%= c.service || '—' %></div>
+          <div class="card-field"><strong>Project:</strong><%= c.projectType || '—' %></div>
+          <% if (c.message) { %>
+            <div class="card-msg"><%= c.message %></div>
+          <% } %>
+          <div class="card-delete">
+            <form action="/admin/contacts/<%= c._id %>/delete" method="POST"
+                  onsubmit="return confirm('Delete this request from ' + '<%= c.name %>' + '?')">
+              <button type="submit" class="btn-delete">✕ Delete Request</button>
+            </form>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="empty-state">No contact requests yet.</div>
+    <% } %>
+  </div>
+
+</div>
+
+<%- include("partials/footer") %>
