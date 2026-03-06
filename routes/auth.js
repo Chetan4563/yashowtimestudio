@@ -140,7 +140,7 @@ router.post(
    GOOGLE OAUTH
 ───────────────────────────────────────────── */
 router.get(
-  "/google",
+  "/auth/google",
   passport.authenticate("google", {
     scope: ["profile", "email"],
     state: true
