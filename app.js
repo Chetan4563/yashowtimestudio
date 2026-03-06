@@ -28,27 +28,36 @@ app.use(
         styleSrc: [
           "'self'",
           "'unsafe-inline'",
-          "https://fonts.googleapis.com"
+          "https://fonts.googleapis.com",
+          "https://cdnjs.cloudflare.com",  // ✅ Font Awesome
+          "https://cdn.jsdelivr.net",       // ✅ Bootstrap CSS
         ],
 
         fontSrc: [
           "'self'",
-          "https://fonts.gstatic.com"
+          "https://fonts.gstatic.com",
+          "https://cdnjs.cloudflare.com",  // ✅ Font Awesome font files
+        ],
+
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",               // ✅ inline scripts
+          "https://cdn.jsdelivr.net",       // ✅ Bootstrap JS
         ],
 
         imgSrc: [
           "'self'",
           "data:",
           "https://www.gstatic.com",
-          "https://res.cloudinary.com"   // ✅ for portfolio images
+          "https://res.cloudinary.com",    // ✅ portfolio images
         ],
 
         mediaSrc: [
           "'self'",
-          "https://res.cloudinary.com"   // ✅ for portfolio videos
-        ]
-      }
-    }
+          "https://res.cloudinary.com",    // ✅ portfolio videos
+        ],
+      },
+    },
   })
 );
 
@@ -119,12 +128,11 @@ app.use((req, res, next) => {
 
   const user = req.session && req.session.user
     ? req.session.user
-    : null; 
+    : null;
 
   res.locals.isAuthenticated = !!user;
   res.locals.user = user;
   req.user = user;
-
 
   next();
 });

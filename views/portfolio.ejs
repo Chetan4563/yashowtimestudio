@@ -120,61 +120,78 @@
   }
 
   /* ═══════════════════════════════════════
-     PORTFOLIO GRID
+     PORTFOLIO GRID — auto-fit masonry-style
+     Columns auto-size to content.
+     Photos keep natural ratio; videos get
+     a play icon badge.
   ═══════════════════════════════════════ */
   .portfolio-grid {
     padding: 0 60px 80px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
+    columns: 3;
+    column-gap: 12px;
     margin-top: 48px;
   }
 
   .portfolio-item {
-    aspect-ratio: 4 / 3;
+    break-inside: avoid;
+    margin-bottom: 12px;
     background: var(--card);
     border: 1px solid rgba(200,241,53,0.05);
     position: relative;
     overflow: hidden;
+    display: block;
+    border-radius: 4px;
   }
 
-  /* ── Media ── */
+  /* ── Media fills item naturally ── */
   .portfolio-media {
-    position: absolute;
-    inset: 0;
+    display: block;
+    width: 100%;
+    line-height: 0;
   }
 
-  .portfolio-media img,
+  .portfolio-media img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  /* Videos: fixed 16/9 so they don't collapse */
   .portfolio-media video {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 16 / 9;
+    display: block;
     object-fit: cover;
     transition: transform 0.5s ease;
   }
 
   .portfolio-item:hover .portfolio-media img,
   .portfolio-item:hover .portfolio-media video {
-    transform: scale(1.05);
+    transform: scale(1.04);
   }
 
   /* ── Overlay ── */
   .portfolio-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(12,15,20,0.96) 0%, transparent 60%);
+    background: linear-gradient(to top, rgba(12,15,20,0.95) 0%, transparent 55%);
     opacity: 0;
     transition: opacity 0.35s;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 28px;
+    padding: 22px;
   }
 
   .portfolio-item:hover .portfolio-overlay { opacity: 1; }
 
-  /* Always-visible overlay on touch devices */
   @media (hover: none) {
-    .portfolio-overlay { opacity: 1; }
+    .portfolio-overlay {
+      opacity: 1;
+      background: linear-gradient(to top, rgba(12,15,20,0.88) 0%, transparent 50%);
+    }
   }
 
   .portfolio-cat {
@@ -184,12 +201,12 @@
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--lime);
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
 
   .portfolio-name {
     font-family: 'Syne', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1.2;
   }
@@ -197,21 +214,46 @@
   .portfolio-sub {
     font-size: 12px;
     color: var(--gray);
-    margin-top: 4px;
+    margin-top: 3px;
+  }
+
+  /* ── Video play badge ── */
+  .video-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    background: rgba(12,15,20,0.75);
+    border: 1px solid rgba(200,241,53,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .video-badge svg {
+    width: 14px;
+    height: 14px;
+    fill: var(--lime);
+    margin-left: 2px; /* optical center for triangle */
   }
 
   /* ── Admin controls ── */
   .portfolio-actions {
-    margin-top: 12px;
+    margin-top: 10px;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
   }
 
   .portfolio-actions button {
-    padding: 6px 14px;
+    padding: 5px 12px;
     font-family: 'Syne', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 1px;
     cursor: pointer;
@@ -231,9 +273,9 @@
   .empty-state {
     padding: 80px 40px;
     color: var(--gray);
-    grid-column: 1 / -1;
     font-size: 15px;
     text-align: center;
+    column-span: all;
   }
 
   .empty-state a {
@@ -410,70 +452,44 @@
      RESPONSIVE
   ═══════════════════════════════════════ */
   @media (max-width: 1024px) {
-    .portfolio-hero  { padding: calc(var(--nav-h) + 40px) 32px 36px; }
-    .portfolio-grid  { padding: 0 32px 60px; grid-template-columns: repeat(2,1fr); }
-    .add-work-wrap   { padding: 0 32px 80px; }
-    .portfolio-cta   { margin: 0 32px 60px; padding: 40px 36px; }
+    .portfolio-hero   { padding: calc(var(--nav-h) + 40px) 32px 36px; }
+    .portfolio-grid   { columns: 2; padding: 0 32px 60px; }
+    .add-work-wrap    { padding: 0 32px 80px; }
+    .portfolio-cta    { margin: 0 32px 60px; padding: 40px 36px; }
     .portfolio-filter { width: 100%; }
   }
 
   @media (max-width: 768px) {
-    .portfolio-cta {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .cta-btns { width: 100%; }
+    .portfolio-cta    { flex-direction: column; align-items: flex-start; }
+    .cta-btns         { width: 100%; }
   }
 
   @media (max-width: 640px) {
     .portfolio-hero { padding: calc(var(--nav-h) + 24px) 20px 28px; }
+    .hero-sub       { font-size: 14px; }
 
-    .hero-sub { font-size: 14px; }
-
-    /* Filter wraps into 2-per-row on small screens */
     .portfolio-filter { width: 100%; }
     .filter-btn { flex: 1 1 calc(50% - 1px); text-align: center; padding: 12px 8px; font-size: 10px; }
 
-    .portfolio-grid {
-      grid-template-columns: 1fr;
-      padding: 0 20px 48px;
-      gap: 12px;
-    }
+    /* Single column masonry on mobile */
+    .portfolio-grid { columns: 1; padding: 0 16px 48px; column-gap: 0; }
+    .portfolio-item { margin-bottom: 10px; border-radius: 8px; }
 
-    /* On mobile, aspect-ratio auto so items don't get too tall */
-    .portfolio-item { aspect-ratio: 16 / 10; }
-
-    .portfolio-overlay {
-      opacity: 1;
-      background: linear-gradient(to top, rgba(12,15,20,0.92) 0%, transparent 55%);
-    }
-
-    .portfolio-name { font-size: 15px; }
+    .portfolio-name { font-size: 14px; }
     .portfolio-sub  { font-size: 11px; }
 
-    .portfolio-cta {
-      margin: 0 20px 48px;
-      padding: 28px 20px;
-    }
-
-    .cta-btns {
-      flex-direction: column;
-    }
+    .portfolio-cta  { margin: 0 16px 48px; padding: 24px 18px; }
+    .cta-btns       { flex-direction: column; }
 
     .cta-btns .btn-primary,
-    .cta-btns .btn-ghost {
-      width: 100%;
-      justify-content: center;
-    }
+    .cta-btns .btn-ghost { width: 100%; justify-content: center; }
 
-    .add-work-wrap { padding: 0 20px 60px; }
-    .add-work-box  { padding: 28px 20px; }
+    .add-work-wrap { padding: 0 16px 60px; }
+    .add-work-box  { padding: 24px 16px; }
   }
 
   @media (max-width: 380px) {
     .filter-btn { font-size: 9px; padding: 11px 6px; }
-    .portfolio-item { aspect-ratio: 4 / 3; }
   }
 </style>
 
@@ -516,6 +532,15 @@
             <img src="<%= w.media.url %>" alt="<%= w.title %>" loading="lazy">
           <% } %>
         </div>
+
+        <%# Play badge — only on video items %>
+        <% if (w.media && w.media.type === 'video') { %>
+          <div class="video-badge">
+            <svg viewBox="0 0 12 14" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1l10 6L1 13V1z"/>
+            </svg>
+          </div>
+        <% } %>
 
         <div class="portfolio-overlay">
           <div class="portfolio-cat"><%= w.category %></div>
