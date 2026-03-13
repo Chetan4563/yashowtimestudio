@@ -78,7 +78,6 @@
     flex-direction: column;
   }
 
-  /* FIX: contact items are now <a> tags — reset link styles */
   .contact-item {
     padding: 24px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -86,8 +85,8 @@
     align-items: flex-start;
     gap: 24px;
     transition: color 0.3s;
-    text-decoration: none;   /* FIX: remove underline from <a> */
-    color: inherit;          /* FIX: inherit white from body */
+    text-decoration: none;
+    color: inherit;
   }
 
   .contact-item:hover .contact-item-val { color: var(--lime); }
@@ -107,7 +106,7 @@
   .contact-item-val {
     font-size: 16px;
     transition: color 0.3s;
-    word-break: break-all; /* FIX: long emails don't overflow on mobile */
+    word-break: break-all;
   }
 
   /* ========================= RIGHT — FORM ========================= */
@@ -161,7 +160,7 @@
   .form-group input::placeholder,
   .form-group textarea::placeholder { color: rgba(255, 255, 255, 0.2); }
 
-  .form-group select option { background: var(--dark2); }
+  .form-group select option { background: var(--dark2); color: var(--white); }
 
   .form-row {
     display: grid;
@@ -181,7 +180,7 @@
     text-transform: uppercase;
     padding: 18px;
     border: none;
-    cursor: pointer; /* FIX: was cursor: none in original — now correctly pointer */
+    cursor: pointer;
     transition: background 0.3s, transform 0.2s;
     position: relative;
     overflow: hidden;
@@ -201,6 +200,93 @@
   .submit-btn:hover { transform: translateY(-1px); }
   .submit-btn span { position: relative; z-index: 1; }
 
+  .submit-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  /* ========================= POPUP ========================= */
+  .popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+
+  .popup-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .popup-box {
+    background: var(--card);
+    border: 1px solid rgba(200, 241, 53, 0.18);
+    padding: 52px 44px 44px;
+    max-width: 440px;
+    width: 90%;
+    text-align: center;
+    transform: translateY(30px) scale(0.95);
+    transition: transform 0.4s cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .popup-overlay.show .popup-box {
+    transform: translateY(0) scale(1);
+  }
+
+  .popup-icon {
+    font-size: 58px;
+    display: block;
+    margin-bottom: 22px;
+    animation: popIn 0.5s cubic-bezier(.34, 1.56, .64, 1) both;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.3); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .popup-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+
+  .popup-title.success { color: var(--lime); }
+  .popup-title.error   { color: #ff5f5f; }
+
+  .popup-msg {
+    font-size: 15px;
+    color: var(--gray);
+    line-height: 1.75;
+    margin-bottom: 36px;
+  }
+
+  .popup-close {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 15px 44px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .popup-close:hover { opacity: 0.82; transform: translateY(-1px); }
+  .popup-close.success-btn { background: var(--lime); color: var(--dark); }
+  .popup-close.error-btn   { background: transparent; border: 1px solid #ff5f5f; color: #ff5f5f; }
+
   /* ========================= FADE-IN ========================= */
   .fade-in {
     opacity: 0;
@@ -215,8 +301,6 @@
   @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
   /* ========================= RESPONSIVE ========================= */
-
-  /* Tablet */
   @media (max-width: 1024px) {
     .contact-wrap {
       grid-template-columns: 1fr;
@@ -224,34 +308,25 @@
       padding: calc(var(--nav-h) + 40px) 32px 80px;
       min-height: auto;
     }
-
     .contact-form { padding: 40px 36px; }
   }
 
-  /* Large mobile */
   @media (max-width: 640px) {
-    .contact-wrap { padding: calc(var(--nav-h) + 24px) 20px 60px; gap: 40px; }
+    .contact-wrap  { padding: calc(var(--nav-h) + 24px) 20px 60px; gap: 40px; }
     .contact-form  { padding: 28px 20px; }
-
     .form-title    { font-size: 26px; margin-bottom: 24px; }
-
-    /* FIX: stack name + phone fields vertically on mobile */
     .form-row      { grid-template-columns: 1fr; gap: 0; }
-
-    /* FIX: font-size 16px prevents iOS Safari auto-zoom on input focus */
     .form-group input,
     .form-group textarea,
     .form-group select { font-size: 16px; padding: 12px 14px; }
-
     .contact-item  { gap: 16px; padding: 20px 0; }
-    .contact-item-icon  { font-size: 20px; }
-    .contact-item-val   { font-size: 14px; }
-
-    /* FIX: taller submit button = easier tap target on mobile */
+    .contact-item-icon { font-size: 20px; }
+    .contact-item-val  { font-size: 14px; }
     .submit-btn    { padding: 20px; font-size: 13px; }
+    .popup-box     { padding: 36px 24px 32px; }
+    .popup-title   { font-size: 30px; }
   }
 
-  /* Small mobile */
   @media (max-width: 380px) {
     .contact-wrap  { padding: calc(var(--nav-h) + 16px) 16px 48px; }
     .contact-form  { padding: 24px 16px; }
@@ -259,6 +334,20 @@
     .contact-info > p { font-size: 14px; }
   }
 </style>
+
+<!-- ========================= POPUP ========================= -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-box">
+    <span class="popup-icon" id="popupIcon">✅</span>
+    <div class="popup-title success" id="popupTitle">Message Sent!</div>
+    <p class="popup-msg" id="popupMsg">
+      We've received your message and will get back to you within 24 hours.
+    </p>
+    <button class="popup-close success-btn" id="popupClose">
+      Got It
+    </button>
+  </div>
+</div>
 
 <!-- ========================= CONTACT ========================= -->
 <div class="contact-wrap">
@@ -276,7 +365,6 @@
 
     <div class="contact-items fade-in fade-in-delay-3">
 
-      <!-- FIX: Instagram → links to profile page -->
       <a href="https://instagram.com/ya.showtime" target="_blank" rel="noopener noreferrer" class="contact-item">
         <div class="contact-item-icon">📸</div>
         <div>
@@ -285,7 +373,6 @@
         </div>
       </a>
 
-      <!-- FIX: Phone → opens dialer / WhatsApp on mobile -->
       <a href="https://wa.me/919309901652" target="_blank" rel="noopener noreferrer" class="contact-item">
         <div class="contact-item-icon">📞</div>
         <div>
@@ -294,7 +381,6 @@
         </div>
       </a>
 
-      <!-- FIX: Email → opens mail client -->
       <a href="mailto:yashow.offical@gmail.com" class="contact-item">
         <div class="contact-item-icon">✉️</div>
         <div>
@@ -303,7 +389,6 @@
         </div>
       </a>
 
-      <!-- Response time: not a link, stays as div -->
       <div class="contact-item">
         <div class="contact-item-icon">⏱️</div>
         <div>
@@ -315,8 +400,8 @@
     </div>
   </div>
 
-  <!-- Right: form -->
-  <form class="contact-form fade-in fade-in-delay-1" action="/api/contact" method="POST">
+  <!-- Right: form — submits via fetch, no page reload -->
+  <form class="contact-form fade-in fade-in-delay-1" id="contactForm">
 
     <div class="form-title">Start Your Project ✦</div>
 
@@ -336,25 +421,27 @@
       <input type="email" name="email" placeholder="you@company.com" required>
     </div>
 
+    <!-- FIX: explicit value="" on every option -->
     <div class="form-group">
       <label>Service Interested In</label>
       <select name="service" required>
         <option value="">Select a service...</option>
-        <option>Brand &amp; Creative</option>
-        <option>Marketing &amp; Growth</option>
-        <option>Tech &amp; Development</option>
-        <option>Social Media Management</option>
-        <option>Monthly Growth Plan</option>
-        <option>Multiple Services</option>
+        <option value="Brand & Creative">Brand &amp; Creative</option>
+        <option value="Marketing & Growth">Marketing &amp; Growth</option>
+        <option value="Tech & Development">Tech &amp; Development</option>
+        <option value="Social Media Management">Social Media Management</option>
+        <option value="Monthly Growth Plan">Monthly Growth Plan</option>
+        <option value="Multiple Services">Multiple Services</option>
       </select>
     </div>
 
+    <!-- FIX: explicit value="" on every option -->
     <div class="form-group">
       <label>Project Type</label>
       <select name="projectType" required>
         <option value="">Select type...</option>
-        <option>One-time Project</option>
-        <option>Monthly Partnership</option>
+        <option value="One-time Project">One-time Project</option>
+        <option value="Monthly Partnership">Monthly Partnership</option>
       </select>
     </div>
 
@@ -362,11 +449,11 @@
       <label>Tell Us About Your Project</label>
       <textarea name="message" rows="5"
         placeholder="Describe your business, goals, and what you're looking to achieve..."
-        required></textarea>
+        required minlength="10"></textarea>
     </div>
 
-    <button class="submit-btn" type="submit">
-      <span>Send Message →</span>
+    <button class="submit-btn" type="submit" id="submitBtn">
+      <span id="submitLabel">Send Message →</span>
     </button>
 
   </form>
@@ -374,3 +461,86 @@
 </div>
 
 <%- include('partials/footer') %>
+<%- include('partials/scripts') %>  
+
+<script>
+  const form        = document.getElementById('contactForm');
+  const overlay     = document.getElementById('popupOverlay');
+  const popupIcon   = document.getElementById('popupIcon');
+  const popupTitle  = document.getElementById('popupTitle');
+  const popupMsg    = document.getElementById('popupMsg');
+  const popupClose  = document.getElementById('popupClose');
+  const submitBtn   = document.getElementById('submitBtn');
+  const submitLabel = document.getElementById('submitLabel');
+
+  /* ---- Submit via fetch (no page reload) ---- */
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Sending...';
+
+    const payload = {
+      name:        form.name.value.trim(),
+      phone:       form.phone.value.trim(),
+      email:       form.email.value.trim(),
+      service:     form.service.value,
+      projectType: form.projectType.value,
+      message:     form.message.value.trim()
+    };
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        showPopup('success');
+        form.reset();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showPopup('error', data.message || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      showPopup('error', 'Network error. Please check your connection and try again.');
+    } finally {
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Send Message →';
+    }
+  });
+
+  /* ---- Show popup ---- */
+  function showPopup(type, errorMsg) {
+    if (type === 'success') {
+      popupIcon.textContent  = '✅';
+      popupTitle.textContent = 'Message Sent!';
+      popupTitle.className   = 'popup-title success';
+      popupMsg.textContent   = "We've received your message and will get back to you within 24 hours.";
+      popupClose.className   = 'popup-close success-btn';
+      popupClose.textContent = 'Got It';
+    } else {
+      popupIcon.textContent  = '❌';
+      popupTitle.textContent = 'Oops!';
+      popupTitle.className   = 'popup-title error';
+      popupMsg.textContent   = errorMsg || 'Something went wrong. Please try again.';
+      popupClose.className   = 'popup-close error-btn';
+      popupClose.textContent = 'Try Again';
+    }
+    // Re-trigger bounce animation on icon
+    popupIcon.style.animation = 'none';
+    popupIcon.offsetHeight;
+    popupIcon.style.animation = '';
+    overlay.classList.add('show');
+  }
+
+  /* ---- Close popup ---- */
+  function closePopup() {
+    overlay.classList.remove('show');
+  }
+
+  popupClose.addEventListener('click', closePopup);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
+</script>

@@ -13,7 +13,14 @@ const contactSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [true, "Phone number is required"],
-    match: [/^[0-9]{10}$/, "Phone number must be 10 digits"]
+    trim: true,
+    validate: {
+      validator: function (v) {
+        const cleaned = v.replace(/^(\+91|91)/, "").replace(/\D/g, "");
+        return /^[0-9]{10}$/.test(cleaned);
+      },
+      message: "Please enter a valid 10-digit phone number"
+    }
   },
 
   email: {
